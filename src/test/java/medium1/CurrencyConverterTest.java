@@ -6,78 +6,70 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CurrencyConverterTest {
-
+class CurrencyConverterTest {
     private CurrencyConverter converter;
 
     @BeforeEach
     void setUp() {
-        this.converter = new CurrencyConverter(90.5);
+        converter = new CurrencyConverter();
     }
 
     @Test
-    public void testConvertPositiveAmount() {
-        double result = converter.convert(10.0);
-        assertEquals(905.0, result, 0.001);
+    void testExchangeRate_Valid() {
+        double rate = converter.exchangeRate("90");
+        assertEquals(90, rate);
+        assertEquals(90, converter.getExchangeRate());
     }
 
     @Test
-    public void testConvertZeroAmount() {
-        double result = converter.convert(0.0);
-        assertEquals(0.0, result, 0.001);
+    void testExchangeRate_EmptyInput() {
+        assertThrows(IllegalArgumentException.class, () -> converter.exchangeRate(""));
     }
 
     @Test
-    public void testConvertNegativeAmount() {
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> converter.convert(-5.0)
-        );
-        assertEquals("Сумма в долларах не может быть отрицательной.", exception.getMessage());
+    void testExchangeRate_NullInput() {
+        assertThrows(IllegalArgumentException.class, () -> converter.exchangeRate(null));
     }
 
     @Test
-    public void testInvalidExchangeRate() {
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new CurrencyConverter(-1.0)
-        );
-        assertEquals("Курс обмена должен быть положительным числом.", exception.getMessage());
+    void testExchangeRate_NotNumber() {
+        assertThrows(IllegalArgumentException.class, () -> converter.exchangeRate("abc"));
     }
 
     @Test
-    public void testLargeAmount() {
-        double result = converter.convert(1_000_000.0);
-        assertEquals(90_500_000.0, result, 0.001);
-    }
-    @Test
-    public void testConvertWithNonNumericInput() {
-        String userInput = "abc";
-
-        Exception exception = assertThrows(
-                NumberFormatException.class,
-                () -> Double.parseDouble(userInput)
-        );
-
-        assertTrue(exception.getMessage().contains("abc"));
+    void testExchangeRate_Negative() {
+        assertThrows(IllegalArgumentException.class, () -> converter.exchangeRate("-10"));
     }
 
+    @Test
+    void testConvertUsdToRub_Valid() {
+        converter.setExchangeRate(90);
+        assertEquals(900, converter.convertUsdToRub("10"));
+    }
 
     @Test
-    public void testEmptyInput() {
-        String userInput = "";
+    void testConvertUsdToRub_EmptyInput() {
+        assertThrows(IllegalArgumentException.class, () -> converter.convertUsdToRub(""));
+    }
 
-        Exception exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    if (userInput.trim().isEmpty()) {
-                        throw new IllegalArgumentException("Ввод не может быть пустым.");
-                    }
-                    double dollars = Double.parseDouble(userInput);
-                    new CurrencyConverter(90.5).convert(dollars);
-                }
-        );
+    @Test
+    void testConvertUsdToRub_NullInput() {
+        assertThrows(IllegalArgumentException.class, () -> converter.convertUsdToRub(null));
+    }
 
-        assertEquals("Ввод не может быть пустым.", exception.getMessage());
+    @Test
+    void testConvertUsdToRub_NotNumber() {
+        assertThrows(IllegalArgumentException.class, () -> converter.convertUsdToRub("abc"));
+    }
+
+    @Test
+    void testConvertUsdToRub_Negative() {
+        assertThrows(IllegalArgumentException.class, () -> converter.convertUsdToRub("-5"));
+    }
+
+    @Test
+    void testConvertUsdToRub_Zero() {
+        converter.setExchangeRate(90);
+        assertEquals(0, converter.convertUsdToRub("0"));
     }
 }
