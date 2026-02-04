@@ -3,14 +3,6 @@ package medium1;
 public class CurrencyConverter {
     private double exchangeRate;
 
-    public double getExchangeRate() {
-        return exchangeRate;
-    }
-
-    public void setExchangeRate(double exchangeRate) {
-        this.exchangeRate = exchangeRate;
-    }
-
     public double exchangeRate(String input) {
         if (input == null || input.trim().isEmpty()) {
             throw new IllegalArgumentException("Значение не может быть пустым");

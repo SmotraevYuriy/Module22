@@ -43,12 +43,10 @@ public class ConsoleApp {
 
     private static void setExchangeRate() {
         CurrencyConverter converter = new CurrencyConverter();
-        double exchangeRate;
         System.out.println("Введите обменный курс:");
         try (Scanner scanner = new Scanner(System.in)) {
             String input = scanner.nextLine();
-            exchangeRate = converter.exchangeRate(input);
-            converter.setExchangeRate(exchangeRate);
+            converter.exchangeRate(input);
         } catch (IllegalArgumentException e) {
             System.err.println("Ошибка: " + e.getMessage());
         }
